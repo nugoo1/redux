@@ -86,6 +86,27 @@ const store = createStore((state = { count: 0 }, action) => {
 
 We've made zero changes to the code. We've just changed the tools we've used.
 
-Now let's do the same for decrement.
+Now let's do the same for decrement and reset.
 
+```
+const store = createStore((state = { count: 0 }, action) => {
+  switch (action.type) {
+    case 'INCREMENT':
+      return {
+        count: state.count + 1
+      };
+    case 'DECREMENT':
+      return {
+        count: state.count - 1
+      };
+    case 'RESET':
+      return {
+        count: 0
+      };
+    default:
+      return state;
+  };
+});
+```
 
+All done! So to recap, the createStore function gets called once when we first create the store, and each time we call store.dispatch(). So every time we dispatch an action to the store, and based on the action we change the state.
