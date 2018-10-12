@@ -806,3 +806,89 @@ const filtersReducer = (state = filtersReducerDefaultState, action) => {
 ```
 
 The expensesReducer does not change at all, just the filtersReducer.
+
+Let's do the two action generators and switch statements for SORT_BY_DATE and SORT_BY_AMOUNT now. They take no arguements so the logic is very simple.
+
+```
+// The Action Generators
+const sortByDate = () => ({
+    type: 'SORT_BY_DATE'
+});
+
+const sortByAmount = () => ({
+    type: 'SORT_BY_AMOUNT'
+});
+```
+
+
+```
+// The filters Reducer with new switch statements for sort by date and sort by amount.
+const filtersReducer = (state = filtersReducerDefaultState, action) => {
+    switch (action.type) {
+        case 'SET_TEXT_FILTER':
+            return {
+                ...state,
+                text: action.text
+            }
+        case 'SORT_BY_AMOUNT':
+            return {
+                ...state,
+                sortBy: 'amount'
+            }
+        case 'SORT_BY_DATE':
+            return {
+                ...state,
+                sortBy: 'date'
+            }
+        default:
+            return state;
+    }
+};
+```
+
+Now let's create our action generators and switch statements for SET_START_DATE and SET_END_DATE
+
+```
+// The Action Generators
+const setStartDate = (startDate) => ({
+    type: 'SET_START_DATE',
+    startDate
+});
+const setEndDate = (endDate) => ({
+    type: 'SET_END_DATE',
+    endDate
+});
+
+// The filters Reducer with new switch statements for sort by date and sort by amount.
+const filtersReducer = (state = filtersReducerDefaultState, action) => {
+    switch (action.type) {
+        case 'SET_TEXT_FILTER':
+            return {
+                ...state,
+                text: action.text
+            }
+        case 'SORT_BY_AMOUNT':
+            return {
+                ...state,
+                sortBy: 'amount'
+            }
+        case 'SORT_BY_DATE':
+            return {
+                ...state,
+                sortBy: 'date'
+            }
+        case 'SET_START_DATE':
+            return {
+                ...state,
+                startDate: action.startDate
+            }
+        case 'SET_END_DATE':
+            return {
+                ...state,
+                endDate: action.endDate
+            }
+        default:
+            return state;
+    }
+};
+```
