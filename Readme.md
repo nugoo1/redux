@@ -892,3 +892,84 @@ const filtersReducer = (state = filtersReducerDefaultState, action) => {
     }
 };
 ```
+
+### Interacting reducers
+Next, we're going to make the filtersRedcuer actually change the expenses array based on the state of the filters object. So what we're going to do to get this done is create a function called getVisibleExpenses, taking in 2 arguements, the expenses array and the filters object. To make this easier, we'll call this function in store.subscribe(); so that every time the Redux store changes, we run the expenses and filters through this new getVisibleExpenses function to sort the expenses array based on the filters object.
+
+First let's just start by creating the dummy function so we know what this will look like.
+
+```
+// Get visible expenses
+const getVisibleExpenses = (expenses, filters) => {
+    return expenses;
+};
+
+store.subscribe(() => {
+    const state = store.getState();
+    const visibleExpenses = getVisibleExpenses(state.expenses, state.filters);
+    console.log(visibleExpenses);
+});
+```
+
+Now let's start by modifying the function so that we destructure the filters object arguement received from invoking the function.
+
+```
+const getVisibleExpenses = (expenses, { text, sortBy, startDate, endDate }) => {
+    return expenses.filter((expense) => {
+        const startDateMatch;
+        const endDateMatch;
+        const textMatch;
+
+        return startDate && endDateMatch && textMatch;
+    });
+};
+```
+
+So what this function does is that it filters through the expense array, only returning the items that match all of the three property values in the filters object, i.e. startDate, endDate and text.
+
+Now let's expand on the logic of actually filtering the expenses array.
+
+```
+const getVisibleExpenses = (expenses, { text, sortBy, startDate, endDate }) => {
+    return expenses.filter((expense) => {
+        const startDateMatch = typeof startDate !== 'number' || expense.createdAt >= startDate; 
+        const endDateMatch = typeof endDate !== 'number' || expense.createdAt <= endDate;
+        const textMatch = expense.description.toLowerCase().includes(text.toLowerCase());
+        
+        return startDateMatch && endDateMatch && textMatch;
+    });
+};
+```
+
+The above function takes in the expenses array and the filters object. First it filters the array and only returns items that match all three of the filter values.
+Let's start with the first one. 
+
+startDateMatch checks if startDate is a number; if startDate is undefined (that means no date filter is set, startDateMatch will equal to true! If expense.createdAt is greater than startDate, that means we do want to see it and again it will make the stateDateMatch equal to true. The same goes for endDateMatch.
+
+textMatch uses the .includes() method of check whether text is included in the expenses.description, and only returns if it does include the text. Don't forget to convert to lowercase before running the .includes() method.
+
+The last thing we have to add is the sortBy filter. What we're going to do is add a .sort() function at the end of our return statement. We're just chaining it on, so the return statement is still going to be used. Let's get to it!
+
+
+```
+// Get visible expenses
+const getVisibleExpenses = (expenses, { text, sortBy, startDate, endDate }) => {
+    return expenses.filter((expense) => {
+        const startDateMatch = typeof startDate !== 'number' || expense.createdAt >= startDate; //First checks if startDate is a number, if startDate is undefined (that means no date filter is set, startDateMatch will equal to true!). If expense.createdAt is greater than startDate, that means we do want to see it and again it will make the stateDateMatch equal to true. 
+        const endDateMatch = typeof endDate !== 'number' || expense.createdAt <= endDate;
+        const textMatch = expense.description.toLowerCase().includes(text.toLowerCase());
+        
+        return startDateMatch && endDateMatch && textMatch;
+    }).sort((a, b) => {
+        if (sortBy === 'date') {
+            return a.createdAt < b.createdAt ? 1 : -1;
+        } if (sortBy === 'amount') {
+            return a.amount < b.amount ? 1 : -1;
+        }
+    });
+};
+```
+
+What this does is, after running all the filtering from the previous sections (startDate, endDate and text), we chained on a .sort() method call. It first checks whether sortBy is set to 'date' or 'amount', then accordingly it runs the conditional statement to sort the array according to the expense.createdAt value or expense.amount value.
+
+And we are done! We have the entire Redux Store in place. Currently it's sitting in one file so in the next section, let's move everything to its own file and also integrate it with React.

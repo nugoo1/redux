@@ -123,6 +123,26 @@ const filtersReducer = (state = filtersReducerDefaultState, action) => {
     }
 };
 
+// timestamps
+// 33400, 10, -203
+
+// Get visible expenses
+const getVisibleExpenses = (expenses, { text, sortBy, startDate, endDate }) => {
+    return expenses.filter((expense) => {
+        const startDateMatch = typeof startDate !== 'number' || expense.createdAt >= startDate; //First checks if startDate is a number, if startDate is undefined (that means no date filter is set, startDateMatch will equal to true!). If expense.createdAt is greater than startDate, that means we do want to see it and again it will make the stateDateMatch equal to true. 
+        const endDateMatch = typeof endDate !== 'number' || expense.createdAt <= endDate;
+        const textMatch = expense.description.toLowerCase().includes(text.toLowerCase());
+        
+        return startDateMatch && endDateMatch && textMatch;
+    }).sort((a, b) => {
+        if (sortBy === 'date') {
+            return a.createdAt < b.createdAt ? 1 : -1;
+        } if (sortBy === 'amount') {
+            return a.amount < b.amount ? 1 : -1;
+        }
+    });
+};
+
 // Store creation
 
 const store = createStore(
@@ -133,11 +153,13 @@ const store = createStore(
 );
 
 store.subscribe(() => {
-    console.log(store.getState());
+    const state = store.getState();
+    const visibleExpenses = getVisibleExpenses(state.expenses, state.filters);
+    console.log(visibleExpenses);
 });
 
-// const expenseOne = store.dispatch(addExpense({ description: 'Rent', amount: 100 }));
-// const expenseTwo = store.dispatch(addExpense({ description: 'Coffee', amount: 200 }));
+const expenseOne = store.dispatch(addExpense({ description: 'Rent', amount: 1200, createdAt: -21000 }));
+const expenseTwo = store.dispatch(addExpense({ description: 'Coffee', amount: 200, createdAt: -1000 }));
 
 // store.dispatch(removeExpense({ id: expenseOne.expense.id }))
 
@@ -146,12 +168,13 @@ store.subscribe(() => {
 // store.dispatch(setTextFilter('rent'));
 // store.dispatch(setTextFilter());
 
-// store.dispatch(sortByAmount()); //amount
+store.dispatch(sortByAmount()); //amount
 // store.dispatch(sortByDate());   //date
 
-store.dispatch(setStartDate(125)); //startDate 125
-store.dispatch(setStartDate()); //startDate undefined
-store.dispatch(setEndDate(1250)); //endDate 1250
+// store.dispatch(setStartDate(0)); //startDate 125
+// store.dispatch(setStartDate()); //startDate undefined
+// store.dispatch(setEndDate(1000)); //endDate 1250
+// store.dispatch(setTextFilter('ffee'));
 
 
 
