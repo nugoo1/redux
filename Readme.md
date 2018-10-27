@@ -312,7 +312,7 @@ console.log(publisherName);
 
 Great, now we can destructure objects, creating seperate variables for the data we pull out of these objects. It allows us to create local variables, rename them as well as setting default values. Next, let's look at Array destructuring. After that, back to Redux!
 
-### ES6 Object Destructuring
+### ES6 Array Destructuring
 Let's start with an example.
 
 ```
